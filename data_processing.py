@@ -75,7 +75,7 @@ def compute_rul_of_one_file(FD00X, id='engine_id', RUL_FD00X=None):
         return rul
 
 
-def get_CMAPSSData(save=False, save_training_data=True, save_testing_data=True, files=[1, 2, 3, 4, 5],
+def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testing_data=True, files=[1, 2, 3, 4, 5],
                    min_max_norm=False):
     '''
     :param save: switch to load the already preprocessed data or begin preprocessing of raw data
@@ -96,10 +96,10 @@ def get_CMAPSSData(save=False, save_training_data=True, save_testing_data=True, 
 
     if save_training_data:  ### Training ###
 
-        train_FD001 = pd.read_table("./CMAPSSData/train_FD001.txt", header=None, delim_whitespace=True)
-        train_FD002 = pd.read_table("./CMAPSSData/train_FD002.txt", header=None, delim_whitespace=True)
-        train_FD003 = pd.read_table("./CMAPSSData/train_FD003.txt", header=None, delim_whitespace=True)
-        train_FD004 = pd.read_table("./CMAPSSData/train_FD004.txt", header=None, delim_whitespace=True)
+        train_FD001 = pd.read_table(path +"train_FD001.txt", header=None, delim_whitespace=True)
+        train_FD002 = pd.read_table(path +"train_FD002.txt", header=None, delim_whitespace=True)
+        train_FD003 = pd.read_table(path + "train_FD003.txt", header=None, delim_whitespace=True)
+        train_FD004 = pd.read_table(path + "train_FD004.txt", header=None, delim_whitespace=True)
         train_FD001.columns = column_name
         train_FD002.columns = column_name
         train_FD003.columns = column_name
@@ -153,20 +153,20 @@ def get_CMAPSSData(save=False, save_training_data=True, save_testing_data=True, 
 
     if save_testing_data:  ### testing ###
 
-        test_FD001 = pd.read_table("./CMAPSSData/test_FD001.txt", header=None, delim_whitespace=True)
-        test_FD002 = pd.read_table("./CMAPSSData/test_FD002.txt", header=None, delim_whitespace=True)
-        test_FD003 = pd.read_table("./CMAPSSData/test_FD003.txt", header=None, delim_whitespace=True)
-        test_FD004 = pd.read_table("./CMAPSSData/test_FD004.txt", header=None, delim_whitespace=True)
+        test_FD001 = pd.read_table(path + "test_FD001.txt", header=None, delim_whitespace=True)
+        test_FD002 = pd.read_table(path + "test_FD002.txt", header=None, delim_whitespace=True)
+        test_FD003 = pd.read_table(path +"test_FD003.txt", header=None, delim_whitespace=True)
+        test_FD004 = pd.read_table(path + "test_FD004.txt", header=None, delim_whitespace=True)
         test_FD001.columns = column_name
         test_FD002.columns = column_name
         test_FD003.columns = column_name
         test_FD004.columns = column_name
 
         # load RUL data
-        RUL_FD001 = pd.read_table("./CMAPSSData/RUL_FD001.txt", header=None, delim_whitespace=True)
-        RUL_FD002 = pd.read_table("./CMAPSSData/RUL_FD002.txt", header=None, delim_whitespace=True)
-        RUL_FD003 = pd.read_table("./CMAPSSData/RUL_FD003.txt", header=None, delim_whitespace=True)
-        RUL_FD004 = pd.read_table("./CMAPSSData/RUL_FD004.txt", header=None, delim_whitespace=True)
+        RUL_FD001 = pd.read_table(path +"RUL_FD001.txt", header=None, delim_whitespace=True)
+        RUL_FD002 = pd.read_table(path +"RUL_FD002.txt", header=None, delim_whitespace=True)
+        RUL_FD003 = pd.read_table(path +"RUL_FD003.txt", header=None, delim_whitespace=True)
+        RUL_FD004 = pd.read_table(path +"RUL_FD004.txt", header=None, delim_whitespace=True)
         RUL_FD001.columns = ['RUL']
         RUL_FD002.columns = ['RUL']
         RUL_FD003.columns = ['RUL']
@@ -294,7 +294,7 @@ def get_PHM08Data(save=False):
     return training_data, testing_data, phm_testing_data
 
 
-def data_augmentation(files=1, low=[10, 40, 90, 170], high=[35, 85, 160, 250], plot=False, combine=False):
+def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85, 160, 250], plot=False, combine=False):
     '''
     This helper function only augments the training data to look like testing data.
     Training data always run to a failure. But testing data is mostly stop before a failure.
@@ -322,7 +322,7 @@ def data_augmentation(files=1, low=[10, 40, 90, 170], high=[35, 85, 160, 250], p
         if combine:
             train_FD00x,_,_ = combine_FD001_and_FD003()
         else:
-            file_path = "./CMAPSSData/train_FD00" + str(files) + ".txt"
+            file_path = path +"train_FD00" + str(files) + ".txt"
             train_FD00x = pd.read_table(file_path, header=None, delim_whitespace=True)
             train_FD00x.columns = column_name
             print(file_path.split("/")[-1])
@@ -448,7 +448,7 @@ def data_augmentation(files=1, low=[10, 40, 90, 170], high=[35, 85, 160, 250], p
         plt.show()
 
 
-def analyse_Data(dataset, files=None, plot=True, min_max=False):
+def analyse_Data(path = "/content/data", dataset= dataset, files=None, plot=True, min_max=False):
     '''
     Generate pre-processed data according to the given dataset
     :param dataset: choose between "phm" for PHM 2008 dataset or "cmapss" for CMAPSS data set with file number
@@ -510,13 +510,13 @@ def analyse_Data(dataset, files=None, plot=True, min_max=False):
             plt.show()
 
 
-def combine_FD001_and_FD003():
+def combine_FD001_and_FD003(path = path ):
     column_name = ['engine_id', 'cycle', 'setting1', 'setting2', 'setting3', 's1', 's2', 's3',
                    's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14',
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
 
-    train_FD001 = pd.read_table("./CMAPSSData/train_FD001.txt", header=None, delim_whitespace=True)
-    train_FD003 = pd.read_table("./CMAPSSData/train_FD003.txt", header=None, delim_whitespace=True)
+    train_FD001 = pd.read_table(path +"train_FD001.txt", header=None, delim_whitespace=True)
+    train_FD003 = pd.read_table(path +"train_FD003.txt", header=None, delim_whitespace=True)
     train_FD001.columns = column_name
     train_FD003.columns = column_name
 
@@ -525,8 +525,8 @@ def combine_FD001_and_FD003():
     train_FD003.index = range(len(train_FD001), len(train_FD001) + len(train_FD003))
     train_FD001_FD002 = pd.concat([train_FD001,train_FD003])
 
-    test_FD001 = pd.read_table("./CMAPSSData/test_FD001.txt", header=None, delim_whitespace=True)
-    test_FD003 = pd.read_table("./CMAPSSData/test_FD003.txt", header=None, delim_whitespace=True)
+    test_FD001 = pd.read_table(path + "test_FD001.txt", header=None, delim_whitespace=True)
+    test_FD003 = pd.read_table(path + "test_FD003.txt", header=None, delim_whitespace=True)
     test_FD001.columns = column_name
     test_FD003.columns = column_name
 
@@ -535,8 +535,8 @@ def combine_FD001_and_FD003():
     test_FD003.index = range(len(test_FD001), len(test_FD001) + len(test_FD003))
     test_FD001_FD002 = pd.concat([test_FD001,test_FD003])
 
-    RUL_FD001 = pd.read_table("./CMAPSSData/RUL_FD001.txt", header=None, delim_whitespace=True)
-    RUL_FD003 = pd.read_table("./CMAPSSData/RUL_FD003.txt", header=None, delim_whitespace=True)
+    RUL_FD001 = pd.read_table(path +"RUL_FD001.txt", header=None, delim_whitespace=True)
+    RUL_FD003 = pd.read_table(path + "RUL_FD003.txt", header=None, delim_whitespace=True)
     RUL_FD001.columns = ['RUL']
     RUL_FD003.columns = ['RUL']
     RUL_FD003.index = range(len(RUL_FD001), len(RUL_FD001) + len(RUL_FD003))

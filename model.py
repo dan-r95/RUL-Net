@@ -254,24 +254,3 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                     plt.plot(actual_rul, label="expected")
                     plt.legend()
                     plt.show()
-
-
-if __name__ == "__main__":
-
-    dataset = "cmapss" 
-    file = 1 # represent the sub-dataset for cmapss
-    TRAIN = True
-    TRJ_WISE = True
-    PLOT = True
-
-    analyse_Data(dataset=dataset, files=[file], plot=False, min_max=False)
-
-    if TRAIN: data_augmentation(files=file,
-                                low=[10, 35, 50, 70, 90, 110, 130, 150, 170, 190, 210, 230, 250, 270, 290, 310, 330],
-                                high=[35, 50, 70, 90, 110, 130, 150, 170, 190, 210, 230, 250, 270, 290, 310, 330, 350],
-                                plot=False,
-                                combine=False)
-
-    from data_processing import RESCALE, test_engine_id
-
-    CNNLSTM(dataset=dataset, file_no=file, Train=TRAIN, trj_wise=TRJ_WISE, plot=PLOT)
