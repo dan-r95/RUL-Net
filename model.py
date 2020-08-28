@@ -7,7 +7,7 @@ from data_processing import get_CMAPSSData, get_PHM08Data, data_augmentation, an
 today = datetime.date.today()
 
 
-def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
+def CNNLSTM(dataset, file_no, path="/content/data/CMaps/", Train=False, trj_wise=False, plot=False, epochs=1000, learning_rate=0.001):
     '''
     The architecture is a Meny-to-meny model combining CNN and LSTM models
     :param dataset: select the specific dataset between PHM08 or CMAPSS
@@ -28,9 +28,9 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
         raise ValueError("Save path not defined")
     ##################################
 
-    if dataset == "cmapss":
-        training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(
-            save=False)
+    if dataset == "cmaps":
+        training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(path=path,
+                                                                              save=True)
         x_train = training_data[:, :training_data.shape[1] - 1]
         y_train = training_data[:, training_data.shape[1] - 1]
         print("training data CNNLSTM: ", x_train.shape, y_train.shape)
@@ -39,7 +39,7 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
         y_test = testing_data[:, testing_data.shape[1] - 1]
         print("testing data CNNLSTM: ", x_test.shape, y_test.shape)
 
-    elif dataset == "phm":
+    elif dataset == "phm08":
         training_data, testing_data, phm_testing_data = get_PHM08Data(
             save=False)
         x_validation = phm_testing_data[:, :phm_testing_data.shape[1] - 1]
@@ -51,8 +51,8 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
         batch_size = 5
 
     sequence_length = 100  # Number of steps
-    learning_rate = 0.001  # 0.0001
-    epochs = 5000
+    learning_rate = learning_rate  # 0.0001
+    epochs = epochs
     ann_hidden = 50
 
     n_channels = 24

@@ -76,7 +76,7 @@ def compute_rul_of_one_file(FD00X, id='engine_id', RUL_FD00X=None):
         return rul
 
 
-def get_CMAPSSData(path="/content/data", save=False, save_training_data=True, save_testing_data=True, files=[1, 2, 3, 4, 5],
+def get_CMAPSSData(path="/content/data", save=False, save_training_data=True, save_testing_data=True, files=[1, 2, 3, 4],
                    min_max_norm=False):
     '''
     :param save: switch to load the already preprocessed data or begin preprocessing of raw data
@@ -523,7 +523,7 @@ def analyse_Data(path="/content/data", dataset= "phm", files=None, plot=True, mi
             # plt.plot(phm_testing_data, label="test")
             plt.show()
 
-    elif dataset == "cmapss":
+    elif dataset == "cmaps":
         training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(save=True, path= path, files=files,
                                                                               min_max_norm=min_max)
         x_train = training_data[:, :training_data.shape[1] - 1]
