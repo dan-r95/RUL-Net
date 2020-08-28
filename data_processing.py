@@ -96,14 +96,13 @@ def get_CMAPSSData(path="/content/data", save=False, save_training_data=True, sa
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
 
     if save_training_data:  # Training ###
-
-        train_FD001 = pd.read_table(
+        train_FD001 = pd.read_csv(
             path + "train_FD001.txt", header=None, delim_whitespace=True)
-        train_FD002 = pd.read_table(
+        train_FD002 = pd.read_csv(
             path + "train_FD002.txt", header=None, delim_whitespace=True)
-        train_FD003 = pd.read_table(
+        train_FD003 = pd.read_csv(
             path + "train_FD003.txt", header=None, delim_whitespace=True)
-        train_FD004 = pd.read_table(
+        train_FD004 = pd.read_csv(
             path + "train_FD004.txt", header=None, delim_whitespace=True)
         train_FD001.columns = column_name
         train_FD002.columns = column_name
@@ -160,13 +159,13 @@ def get_CMAPSSData(path="/content/data", save=False, save_training_data=True, sa
 
     if save_testing_data:  # testing ###
 
-        test_FD001 = pd.read_table(
+        test_FD001 = pd.read_csv(
             path + "test_FD001.txt", header=None, delim_whitespace=True)
-        test_FD002 = pd.read_table(
+        test_FD002 = pd.read_csv(
             path + "test_FD002.txt", header=None, delim_whitespace=True)
-        test_FD003 = pd.read_table(
+        test_FD003 = pd.read_csv(
             path + "test_FD003.txt", header=None, delim_whitespace=True)
-        test_FD004 = pd.read_table(
+        test_FD004 = pd.read_csv(
             path + "test_FD004.txt", header=None, delim_whitespace=True)
         test_FD001.columns = column_name
         test_FD002.columns = column_name
@@ -174,13 +173,13 @@ def get_CMAPSSData(path="/content/data", save=False, save_training_data=True, sa
         test_FD004.columns = column_name
 
         # load RUL data
-        RUL_FD001 = pd.read_table(
+        RUL_FD001 = pd.read_csv(
             path + "RUL_FD001.txt", header=None, delim_whitespace=True)
-        RUL_FD002 = pd.read_table(
+        RUL_FD002 = pd.read_csv(
             path + "RUL_FD002.txt", header=None, delim_whitespace=True)
-        RUL_FD003 = pd.read_table(
+        RUL_FD003 = pd.read_csv(
             path + "RUL_FD003.txt", header=None, delim_whitespace=True)
-        RUL_FD004 = pd.read_table(
+        RUL_FD004 = pd.read_csv(
             path + "RUL_FD004.txt", header=None, delim_whitespace=True)
         RUL_FD001.columns = ['RUL']
         RUL_FD002.columns = ['RUL']
@@ -246,10 +245,10 @@ def get_PHM08Data(save=False):
     column_name = ['engine_id', 'cycle', 'setting1', 'setting2', 'setting3', 's1', 's2', 's3',
                    's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14',
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
-    phm_training_data = pd.read_table(
+    phm_training_data = pd.read_csv(
         "./PHM08/train.txt", header=None, delim_whitespace=True)
     phm_training_data.columns = column_name
-    phm_testing_data = pd.read_table(
+    phm_testing_data = pd.read_csv(
         "./PHM08/final_test.txt", header=None, delim_whitespace=True)
     phm_testing_data.columns = column_name
 
@@ -339,7 +338,7 @@ def data_augmentation(path="/content/data", files=1, low=[10, 40, 90, 170], high
 
     ### Loading original data ###
     if files == "phm":
-        train_FD00x = pd.read_table(
+        train_FD00x = pd.read_csv(
             "./PHM08/processed_data/phm_training_data.txt", header=None, delim_whitespace=True)
         train_FD00x.drop(train_FD00x.columns[len(
             train_FD00x.columns) - 1], axis=1, inplace=True)
@@ -349,7 +348,7 @@ def data_augmentation(path="/content/data", files=1, low=[10, 40, 90, 170], high
             train_FD00x, _, _ = combine_FD001_and_FD003()
         else:
             file_path = path + "train_FD00" + str(files) + ".txt"
-            train_FD00x = pd.read_table(
+            train_FD00x = pd.read_csv(
                 file_path, header=None, delim_whitespace=True)
             train_FD00x.columns = column_name
             print(file_path.split("/")[-1])
@@ -525,7 +524,7 @@ def analyse_Data(path="/content/data", dataset= "phm", files=None, plot=True, mi
             plt.show()
 
     elif dataset == "cmapss":
-        training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(save=True, files=files,
+        training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(save=True, path= path, files=files,
                                                                               min_max_norm=min_max)
         x_train = training_data[:, :training_data.shape[1] - 1]
         y_train = training_data[:, training_data.shape[1] - 1]
@@ -554,9 +553,9 @@ def combine_FD001_and_FD003(path="/content/data"):
                    's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14',
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
 
-    train_FD001 = pd.read_table(
+    train_FD001 = pd.read_csv(
         path + "train_FD001.txt", header=None, delim_whitespace=True)
-    train_FD003 = pd.read_table(
+    train_FD003 = pd.read_csv(
         path + "train_FD003.txt", header=None, delim_whitespace=True)
     train_FD001.columns = column_name
     train_FD003.columns = column_name
@@ -567,9 +566,9 @@ def combine_FD001_and_FD003(path="/content/data"):
         len(train_FD001), len(train_FD001) + len(train_FD003))
     train_FD001_FD002 = pd.concat([train_FD001, train_FD003])
 
-    test_FD001 = pd.read_table(
+    test_FD001 = pd.read_csv(
         path + "test_FD001.txt", header=None, delim_whitespace=True)
-    test_FD003 = pd.read_table(
+    test_FD003 = pd.read_csv(
         path + "test_FD003.txt", header=None, delim_whitespace=True)
     test_FD001.columns = column_name
     test_FD003.columns = column_name
@@ -580,9 +579,9 @@ def combine_FD001_and_FD003(path="/content/data"):
         len(test_FD001), len(test_FD001) + len(test_FD003))
     test_FD001_FD002 = pd.concat([test_FD001, test_FD003])
 
-    RUL_FD001 = pd.read_table(path + "RUL_FD001.txt",
+    RUL_FD001 = pd.read_csv(path + "RUL_FD001.txt",
                               header=None, delim_whitespace=True)
-    RUL_FD003 = pd.read_table(path + "RUL_FD003.txt",
+    RUL_FD003 = pd.read_csv(path + "RUL_FD003.txt",
                               header=None, delim_whitespace=True)
     RUL_FD001.columns = ['RUL']
     RUL_FD003.columns = ['RUL']
