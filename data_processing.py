@@ -71,11 +71,12 @@ def compute_rul_of_one_file(FD00X, id='engine_id', RUL_FD00X=None):
         for _id in set(FD00X[id]):
             # print("#### id ####", int(RUL_FD00X.iloc[_id - 1]))
             true_rul.append(int(RUL_FD00X.iloc[_id - 1]))
-            rul.extend(compute_rul_of_one_id(FD00X[FD00X[id] == _id], int(RUL_FD00X.iloc[_id - 1])))
+            rul.extend(compute_rul_of_one_id(
+                FD00X[FD00X[id] == _id], int(RUL_FD00X.iloc[_id - 1])))
         return rul
 
 
-def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testing_data=True, files=[1, 2, 3, 4, 5],
+def get_CMAPSSData(path="/content/data", save=False, save_training_data=True, save_testing_data=True, files=[1, 2, 3, 4, 5],
                    min_max_norm=False):
     '''
     :param save: switch to load the already preprocessed data or begin preprocessing of raw data
@@ -94,12 +95,16 @@ def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testin
                    's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14',
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
 
-    if save_training_data:  ### Training ###
+    if save_training_data:  # Training ###
 
-        train_FD001 = pd.read_table(path +"train_FD001.txt", header=None, delim_whitespace=True)
-        train_FD002 = pd.read_table(path +"train_FD002.txt", header=None, delim_whitespace=True)
-        train_FD003 = pd.read_table(path + "train_FD003.txt", header=None, delim_whitespace=True)
-        train_FD004 = pd.read_table(path + "train_FD004.txt", header=None, delim_whitespace=True)
+        train_FD001 = pd.read_table(
+            path + "train_FD001.txt", header=None, delim_whitespace=True)
+        train_FD002 = pd.read_table(
+            path + "train_FD002.txt", header=None, delim_whitespace=True)
+        train_FD003 = pd.read_table(
+            path + "train_FD003.txt", header=None, delim_whitespace=True)
+        train_FD004 = pd.read_table(
+            path + "train_FD004.txt", header=None, delim_whitespace=True)
         train_FD001.columns = column_name
         train_FD002.columns = column_name
         train_FD003.columns = column_name
@@ -107,7 +112,8 @@ def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testin
 
         previous_len = 0
         frames = []
-        for data_file in ['train_FD00' + str(i) for i in files]:  # load subdataset by subdataset
+        # load subdataset by subdataset
+        for data_file in ['train_FD00' + str(i) for i in files]:
 
             #### standard normalization ####
             mean = eval(data_file).iloc[:, 2:len(list(eval(data_file)))].mean()
@@ -127,7 +133,8 @@ def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testin
             eval(data_file)['RUL'] = compute_rul_of_one_file(eval(data_file))
             current_len = len(eval(data_file))
             # print(eval(data_file).index)
-            eval(data_file).index = range(previous_len, previous_len + current_len)
+            eval(data_file).index = range(
+                previous_len, previous_len + current_len)
             previous_len = previous_len + current_len
             # print(eval(data_file).index)
             frames.append(eval(data_file))
@@ -151,22 +158,30 @@ def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testin
         train = pd.read_csv('normalized_train_data.csv', index_col=[0])
         train_values = train.values
 
-    if save_testing_data:  ### testing ###
+    if save_testing_data:  # testing ###
 
-        test_FD001 = pd.read_table(path + "test_FD001.txt", header=None, delim_whitespace=True)
-        test_FD002 = pd.read_table(path + "test_FD002.txt", header=None, delim_whitespace=True)
-        test_FD003 = pd.read_table(path +"test_FD003.txt", header=None, delim_whitespace=True)
-        test_FD004 = pd.read_table(path + "test_FD004.txt", header=None, delim_whitespace=True)
+        test_FD001 = pd.read_table(
+            path + "test_FD001.txt", header=None, delim_whitespace=True)
+        test_FD002 = pd.read_table(
+            path + "test_FD002.txt", header=None, delim_whitespace=True)
+        test_FD003 = pd.read_table(
+            path + "test_FD003.txt", header=None, delim_whitespace=True)
+        test_FD004 = pd.read_table(
+            path + "test_FD004.txt", header=None, delim_whitespace=True)
         test_FD001.columns = column_name
         test_FD002.columns = column_name
         test_FD003.columns = column_name
         test_FD004.columns = column_name
 
         # load RUL data
-        RUL_FD001 = pd.read_table(path +"RUL_FD001.txt", header=None, delim_whitespace=True)
-        RUL_FD002 = pd.read_table(path +"RUL_FD002.txt", header=None, delim_whitespace=True)
-        RUL_FD003 = pd.read_table(path +"RUL_FD003.txt", header=None, delim_whitespace=True)
-        RUL_FD004 = pd.read_table(path +"RUL_FD004.txt", header=None, delim_whitespace=True)
+        RUL_FD001 = pd.read_table(
+            path + "RUL_FD001.txt", header=None, delim_whitespace=True)
+        RUL_FD002 = pd.read_table(
+            path + "RUL_FD002.txt", header=None, delim_whitespace=True)
+        RUL_FD003 = pd.read_table(
+            path + "RUL_FD003.txt", header=None, delim_whitespace=True)
+        RUL_FD004 = pd.read_table(
+            path + "RUL_FD004.txt", header=None, delim_whitespace=True)
         RUL_FD001.columns = ['RUL']
         RUL_FD002.columns = ['RUL']
         RUL_FD003.columns = ['RUL']
@@ -187,9 +202,11 @@ def get_CMAPSSData(path = path, save=False, save_training_data=True, save_testin
                 eval(data_file).iloc[:, 2:len(list(eval(data_file)))] = (eval(data_file).iloc[:, 2:len(
                     list(eval(data_file)))] - mean) / std
 
-            eval(data_file)['RUL'] = compute_rul_of_one_file(eval(data_file), RUL_FD00X=eval(rul_file))
+            eval(data_file)['RUL'] = compute_rul_of_one_file(
+                eval(data_file), RUL_FD00X=eval(rul_file))
             current_len = len(eval(data_file))
-            eval(data_file).index = range(previous_len, previous_len + current_len)
+            eval(data_file).index = range(
+                previous_len, previous_len + current_len)
             previous_len = previous_len + current_len
             frames.append(eval(data_file))
             print(data_file)
@@ -229,9 +246,11 @@ def get_PHM08Data(save=False):
     column_name = ['engine_id', 'cycle', 'setting1', 'setting2', 'setting3', 's1', 's2', 's3',
                    's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14',
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
-    phm_training_data = pd.read_table("./PHM08/train.txt", header=None, delim_whitespace=True)
+    phm_training_data = pd.read_table(
+        "./PHM08/train.txt", header=None, delim_whitespace=True)
     phm_training_data.columns = column_name
-    phm_testing_data = pd.read_table("./PHM08/final_test.txt", header=None, delim_whitespace=True)
+    phm_testing_data = pd.read_table(
+        "./PHM08/final_test.txt", header=None, delim_whitespace=True)
     phm_testing_data.columns = column_name
 
     print("phm training")
@@ -269,32 +288,37 @@ def get_PHM08Data(save=False):
 
     # test_engine_id = pd.Series(test_engine_ids)
 
-
-    training_data = phm_training_data[train_engine_id[train_engine_id == train_engine_ids[0]].index]
+    training_data = phm_training_data[train_engine_id[train_engine_id ==
+                                                      train_engine_ids[0]].index]
     for id in train_engine_ids[1:]:
         tmp = phm_training_data[train_engine_id[train_engine_id == id].index]
         training_data = np.concatenate((training_data, tmp))
     # print(training_data.shape)
 
-    testing_data = phm_training_data[train_engine_id[train_engine_id == test_engine_ids[0]].index]
+    testing_data = phm_training_data[train_engine_id[train_engine_id ==
+                                                     test_engine_ids[0]].index]
     for id in test_engine_ids[1:]:
         tmp = phm_training_data[train_engine_id[train_engine_id == id].index]
         testing_data = np.concatenate((testing_data, tmp))
     # print(testing_data.shape)
 
-    print(phm_training_data.shape, phm_testing_data.shape, training_data.shape, testing_data.shape)
+    print(phm_training_data.shape, phm_testing_data.shape,
+          training_data.shape, testing_data.shape)
 
     np.save("./PHM08/processed_data/phm_training_data.npy", training_data)
-    np.savetxt("./PHM08/processed_data/phm_training_data.txt", training_data, delimiter=" ")
+    np.savetxt("./PHM08/processed_data/phm_training_data.txt",
+               training_data, delimiter=" ")
     np.save("./PHM08/processed_data/phm_testing_data.npy", testing_data)
-    np.savetxt("./PHM08/processed_data/phm_testing_data.txt", testing_data, delimiter=" ")
+    np.savetxt("./PHM08/processed_data/phm_testing_data.txt",
+               testing_data, delimiter=" ")
     np.save("./PHM08/processed_data/phm_original_testing_data.npy", phm_testing_data)
-    np.savetxt("./PHM08/processed_data/phm_original_testing_data.csv", phm_testing_data, delimiter=",")
+    np.savetxt("./PHM08/processed_data/phm_original_testing_data.csv",
+               phm_testing_data, delimiter=",")
 
     return training_data, testing_data, phm_testing_data
 
 
-def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85, 160, 250], plot=False, combine=False):
+def data_augmentation(path="/content/data", files=1, low=[10, 40, 90, 170], high=[35, 85, 160, 250], plot=False, combine=False):
     '''
     This helper function only augments the training data to look like testing data.
     Training data always run to a failure. But testing data is mostly stop before a failure.
@@ -315,15 +339,18 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
 
     ### Loading original data ###
     if files == "phm":
-        train_FD00x = pd.read_table("./PHM08/processed_data/phm_training_data.txt", header=None, delim_whitespace=True)
-        train_FD00x.drop(train_FD00x.columns[len(train_FD00x.columns) - 1], axis=1, inplace=True)
+        train_FD00x = pd.read_table(
+            "./PHM08/processed_data/phm_training_data.txt", header=None, delim_whitespace=True)
+        train_FD00x.drop(train_FD00x.columns[len(
+            train_FD00x.columns) - 1], axis=1, inplace=True)
         train_FD00x.columns = column_name
     else:
         if combine:
-            train_FD00x,_,_ = combine_FD001_and_FD003()
+            train_FD00x, _, _ = combine_FD001_and_FD003()
         else:
-            file_path = path +"train_FD00" + str(files) + ".txt"
-            train_FD00x = pd.read_table(file_path, header=None, delim_whitespace=True)
+            file_path = path + "train_FD00" + str(files) + ".txt"
+            train_FD00x = pd.read_table(
+                file_path, header=None, delim_whitespace=True)
             train_FD00x.columns = column_name
             print(file_path.split("/")[-1])
 
@@ -331,7 +358,8 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
         mean = train_FD00x.iloc[:, 2:len(list(train_FD00x))].mean()
         std = train_FD00x.iloc[:, 2:len(list(train_FD00x))].std()
         std.replace(0, 1, inplace=True)
-        train_FD00x.iloc[:, 2:len(list(train_FD00x))] = (train_FD00x.iloc[:, 2:len(list(train_FD00x))] - mean) / std
+        train_FD00x.iloc[:, 2:len(list(train_FD00x))] = (
+            train_FD00x.iloc[:, 2:len(list(train_FD00x))] - mean) / std
 
     final_train_FD = train_FD00x.copy()
     previous_len = 0
@@ -342,39 +370,48 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
         engine_ids = train_engine_id.unique()
         total_ids = len(engine_ids)
         train_rul = []
-        print("*************", final_train_FD.shape, total_ids, low[i], high[i], "*****************")
+        print("*************", final_train_FD.shape,
+              total_ids, low[i], high[i], "*****************")
 
         for id in range(1, total_ids + 1):
 
             train_engine_id = train_FD['engine_id']
-            indexes = train_engine_id[train_engine_id == id].index  ### filter indexes related to id
-            traj_data = train_FD.loc[indexes]  ### filter trajectory data
+            # filter indexes related to id
+            indexes = train_engine_id[train_engine_id == id].index
+            traj_data = train_FD.loc[indexes]  # filter trajectory data
 
-            cutoff_cycle = random.randint(low[i], high[i])  ### randomly selecting the cutoff point of the engine cycle
+            # randomly selecting the cutoff point of the engine cycle
+            cutoff_cycle = random.randint(low[i], high[i])
 
             if cutoff_cycle > max(traj_data['cycle']):
                 cutoff_cycle = max(traj_data['cycle'])
 
-            train_rul.append(max(traj_data['cycle']) - cutoff_cycle)  ### collecting remaining cycles
+            # collecting remaining cycles
+            train_rul.append(max(traj_data['cycle']) - cutoff_cycle)
 
-            cutoff_cycle_index = traj_data['cycle'][traj_data['cycle'] == cutoff_cycle].index  ### cutoff cycle index
+            # cutoff cycle index
+            cutoff_cycle_index = traj_data['cycle'][traj_data['cycle']
+                                                    == cutoff_cycle].index
 
             if DEBUG:
                 print("traj_shape: ", traj_data.shape, "current_engine_id:", id, "cutoff_cycle:", cutoff_cycle,
-                      "cutoff_index", cutoff_cycle_index, "engine_fist_index", indexes[0], "engine_last_index",
+                      "cutoff_index", cutoff_cycle_index, "engine_fist_index", indexes[
+                          0], "engine_last_index",
                       indexes[-1])
 
             ### removing rows after cutoff cycle index ###
             if cutoff_cycle_index[0] != indexes[-1]:
-                drop_range = list(range(cutoff_cycle_index[0] + 1, indexes[-1] + 1))
+                drop_range = list(
+                    range(cutoff_cycle_index[0] + 1, indexes[-1] + 1))
                 train_FD.drop(train_FD.index[drop_range], inplace=True)
                 train_FD.reset_index(drop=True, inplace=True)
 
-        ### calculating the RUL for augmented data
+        # calculating the RUL for augmented data
         train_rul = pd.DataFrame.from_dict({'RUL': train_rul})
-        train_FD['RUL'] = compute_rul_of_one_file(train_FD, RUL_FD00X=train_rul)
+        train_FD['RUL'] = compute_rul_of_one_file(
+            train_FD, RUL_FD00X=train_rul)
 
-        ### changing the engine_id for augmented data
+        # changing the engine_id for augmented data
         train_engine_id = train_FD['engine_id']
         for id in range(1, total_ids + 1):
             indexes = train_engine_id[train_engine_id == id].index
@@ -383,11 +420,13 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
         if i == 0:  # should only execute at the first iteration
             final_train_FD['RUL'] = compute_rul_of_one_file(final_train_FD)
             current_len = len(final_train_FD)
-            final_train_FD.index = range(previous_len, previous_len + current_len)
+            final_train_FD.index = range(
+                previous_len, previous_len + current_len)
             previous_len = previous_len + current_len
 
-        ### Re-indexing the augmented data
-        train_FD['RUL'].index = range(previous_len, previous_len + len(train_FD))
+        # Re-indexing the augmented data
+        train_FD['RUL'].index = range(
+            previous_len, previous_len + len(train_FD))
         previous_len = previous_len + len(train_FD)
 
         final_train_FD = pd.concat(
@@ -404,7 +443,8 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
     np.random.shuffle(engine_ids)
     # print(engine_ids)
 
-    training_data = train.loc[train_engine_id[train_engine_id == engine_ids[0]].index]
+    training_data = train.loc[train_engine_id[train_engine_id ==
+                                              engine_ids[0]].index]
     training_data.reset_index(drop=True, inplace=True)
     previous_len = len(training_data)
     for id in engine_ids[1:]:
@@ -413,7 +453,6 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
         traj_data.index = range(previous_len, previous_len + current_len)
         previous_len = previous_len + current_len
         training_data = pd.concat([training_data, traj_data])
-
 
     global training_engine_id
     training_engine_id = training_data['engine_id']
@@ -428,7 +467,6 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
     training_data_values = training_data.values * SCALE
     np.save('normalized_train_data.npy', training_data_values)
     training_data.to_csv('normalized_train_data.csv')
-
 
     train = training_data_values
     x_train = train[:, :train.shape[1] - 1]
@@ -448,7 +486,7 @@ def data_augmentation(path = path, files=1, low=[10, 40, 90, 170], high=[35, 85,
         plt.show()
 
 
-def analyse_Data(path = "/content/data", dataset= dataset, files=None, plot=True, min_max=False):
+def analyse_Data(path="/content/data", dataset= "phm", files=None, plot=True, min_max=False):
     '''
     Generate pre-processed data according to the given dataset
     :param dataset: choose between "phm" for PHM 2008 dataset or "cmapss" for CMAPSS data set with file number
@@ -458,12 +496,13 @@ def analyse_Data(path = "/content/data", dataset= dataset, files=None, plot=True
     '''
 
     if dataset == "phm":
-        training_data, testing_data, phm_testing_data = get_PHM08Data(save=True)
+        training_data, testing_data, phm_testing_data = get_PHM08Data(
+            save=True)
 
         x_phmtrain = training_data[:, :training_data.shape[1] - 1]
         y_phmtrain = training_data[:, training_data.shape[1] - 1]
 
-        x_phmtest = testing_data[:, :testing_data.shape[1] - 1]
+        __name__ = testing_data[:, :testing_data.shape[1] - 1]
         y_phmtest = testing_data[:, testing_data.shape[1] - 1]
 
         print("phmtrain", x_phmtrain.shape, y_phmtrain.shape)
@@ -510,36 +549,44 @@ def analyse_Data(path = "/content/data", dataset= dataset, files=None, plot=True
             plt.show()
 
 
-def combine_FD001_and_FD003(path = path ):
+def combine_FD001_and_FD003(path="/content/data"):
     column_name = ['engine_id', 'cycle', 'setting1', 'setting2', 'setting3', 's1', 's2', 's3',
                    's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14',
                    's15', 's16', 's17', 's18', 's19', 's20', 's21']
 
-    train_FD001 = pd.read_table(path +"train_FD001.txt", header=None, delim_whitespace=True)
-    train_FD003 = pd.read_table(path +"train_FD003.txt", header=None, delim_whitespace=True)
+    train_FD001 = pd.read_table(
+        path + "train_FD001.txt", header=None, delim_whitespace=True)
+    train_FD003 = pd.read_table(
+        path + "train_FD003.txt", header=None, delim_whitespace=True)
     train_FD001.columns = column_name
     train_FD003.columns = column_name
 
     FD001_max_engine_id = max(train_FD001['engine_id'])
     train_FD003['engine_id'] = train_FD003['engine_id'] + FD001_max_engine_id
-    train_FD003.index = range(len(train_FD001), len(train_FD001) + len(train_FD003))
-    train_FD001_FD002 = pd.concat([train_FD001,train_FD003])
+    train_FD003.index = range(
+        len(train_FD001), len(train_FD001) + len(train_FD003))
+    train_FD001_FD002 = pd.concat([train_FD001, train_FD003])
 
-    test_FD001 = pd.read_table(path + "test_FD001.txt", header=None, delim_whitespace=True)
-    test_FD003 = pd.read_table(path + "test_FD003.txt", header=None, delim_whitespace=True)
+    test_FD001 = pd.read_table(
+        path + "test_FD001.txt", header=None, delim_whitespace=True)
+    test_FD003 = pd.read_table(
+        path + "test_FD003.txt", header=None, delim_whitespace=True)
     test_FD001.columns = column_name
     test_FD003.columns = column_name
 
     FD001_max_engine_id = max(test_FD001['engine_id'])
     test_FD003['engine_id'] = test_FD003['engine_id'] + FD001_max_engine_id
-    test_FD003.index = range(len(test_FD001), len(test_FD001) + len(test_FD003))
-    test_FD001_FD002 = pd.concat([test_FD001,test_FD003])
+    test_FD003.index = range(
+        len(test_FD001), len(test_FD001) + len(test_FD003))
+    test_FD001_FD002 = pd.concat([test_FD001, test_FD003])
 
-    RUL_FD001 = pd.read_table(path +"RUL_FD001.txt", header=None, delim_whitespace=True)
-    RUL_FD003 = pd.read_table(path + "RUL_FD003.txt", header=None, delim_whitespace=True)
+    RUL_FD001 = pd.read_table(path + "RUL_FD001.txt",
+                              header=None, delim_whitespace=True)
+    RUL_FD003 = pd.read_table(path + "RUL_FD003.txt",
+                              header=None, delim_whitespace=True)
     RUL_FD001.columns = ['RUL']
     RUL_FD003.columns = ['RUL']
     RUL_FD003.index = range(len(RUL_FD001), len(RUL_FD001) + len(RUL_FD003))
     RUL_FD001_FD002 = pd.concat([test_FD001, test_FD003])
 
-    return train_FD001_FD002,test_FD001_FD002,RUL_FD001_FD002
+    return train_FD001_FD002, test_FD001_FD002, RUL_FD001_FD002

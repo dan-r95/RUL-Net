@@ -28,9 +28,9 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
         raise ValueError("Save path not defined")
     ##################################
 
-
     if dataset == "cmapss":
-        training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(save=False)
+        training_data, testing_data, training_pd, testing_pd = get_CMAPSSData(
+            save=False)
         x_train = training_data[:, :training_data.shape[1] - 1]
         y_train = training_data[:, training_data.shape[1] - 1]
         print("training data CNNLSTM: ", x_train.shape, y_train.shape)
@@ -40,13 +40,15 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
         print("testing data CNNLSTM: ", x_test.shape, y_test.shape)
 
     elif dataset == "phm":
-        training_data, testing_data, phm_testing_data = get_PHM08Data(save=False)
+        training_data, testing_data, phm_testing_data = get_PHM08Data(
+            save=False)
         x_validation = phm_testing_data[:, :phm_testing_data.shape[1] - 1]
         y_validation = phm_testing_data[:, phm_testing_data.shape[1] - 1]
         print("testing data: ", x_validation.shape, y_validation.shape)
 
     batch_size = 1024  # Batch size
-    if Train == False: batch_size = 5
+    if Train == False:
+        batch_size = 5
 
     sequence_length = 100  # Number of steps
     learning_rate = 0.001  # 0.0001
@@ -58,7 +60,8 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
     lstm_size = n_channels * 3  # 3 times the amount of channels
     num_layers = 2  # 2  # Number of layers
 
-    X = tf.placeholder(tf.float32, [None, sequence_length, n_channels], name='inputs')
+    X = tf.placeholder(
+        tf.float32, [None, sequence_length, n_channels], name='inputs')
     Y = tf.placeholder(tf.float32, [None, sequence_length], name='labels')
     keep_prob = tf.placeholder(tf.float32, name='keep_prob')
     learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
@@ -66,15 +69,18 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
 
     conv1 = conv_layer(X, filters=18, kernel_size=2, strides=1, padding='same', batch_norm=False, is_train=is_train,
                        scope='conv_1')
-    max_pool_1 = tf.layers.max_pooling1d(inputs=conv1, pool_size=2, strides=2, padding='same', name='maxpool_1')
+    max_pool_1 = tf.layers.max_pooling1d(
+        inputs=conv1, pool_size=2, strides=2, padding='same', name='maxpool_1')
 
     conv2 = conv_layer(max_pool_1, filters=36, kernel_size=2, strides=1, padding='same', batch_norm=False,
                        is_train=is_train, scope='conv_2')
-    max_pool_2 = tf.layers.max_pooling1d(inputs=conv2, pool_size=2, strides=2, padding='same', name='maxpool_2')
+    max_pool_2 = tf.layers.max_pooling1d(
+        inputs=conv2, pool_size=2, strides=2, padding='same', name='maxpool_2')
 
     conv3 = conv_layer(max_pool_2, filters=72, kernel_size=2, strides=1, padding='same', batch_norm=False,
                        is_train=is_train, scope='conv_3')
-    max_pool_3 = tf.layers.max_pooling1d(inputs=conv3, pool_size=2, strides=2, padding='same', name='maxpool_3')
+    max_pool_3 = tf.layers.max_pooling1d(
+        inputs=conv3, pool_size=2, strides=2, padding='same', name='maxpool_3')
 
     conv_last_layer = max_pool_3
 
@@ -86,10 +92,13 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                                 scope="fc_1")
     lstm_input = tf.reshape(dence_layer_1, [-1, sequence_length, n_channels])
 
-    cell = get_RNNCell(['LSTM'] * num_layers, keep_prob=keep_prob, state_size=lstm_size)
+    cell = get_RNNCell(['LSTM'] * num_layers,
+                       keep_prob=keep_prob, state_size=lstm_size)
     init_state = cell.zero_state(batch_size, tf.float32)
-    rnn_output, states = tf.nn.dynamic_rnn(cell, lstm_input, dtype=tf.float32, initial_state=init_state)
-    stacked_rnn_output = tf.reshape(rnn_output, [-1, lstm_size])  # change the form into a tensor
+    rnn_output, states = tf.nn.dynamic_rnn(
+        cell, lstm_input, dtype=tf.float32, initial_state=init_state)
+    # change the form into a tensor
+    stacked_rnn_output = tf.reshape(rnn_output, [-1, lstm_size])
 
     dence_layer_2 = dense_layer(stacked_rnn_output, size=ann_hidden, activation_fn=tf.nn.relu, batch_norm=False,
                                 phase=is_train, drop_out=True, keep_prob=keep_prob,
@@ -109,12 +118,15 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
     optimizer = tf.train.AdamOptimizer(learning_rate_).minimize(cost_function)
 
     saver = tf.train.Saver()
-    training_generator = batch_generator(x_train, y_train, batch_size, sequence_length, online=True)
-    testing_generator = batch_generator(x_test, y_test, batch_size, sequence_length, online=False)
+    training_generator = batch_generator(
+        x_train, y_train, batch_size, sequence_length, online=True)
+    testing_generator = batch_generator(
+        x_test, y_test, batch_size, sequence_length, online=False)
 
-    if Train: model_summary(learning_rate=learning_rate, batch_size=batch_size, lstm_layers=num_layers,
-                            lstm_layer_size=lstm_size, fc_layer_size=ann_hidden, sequence_length=sequence_length,
-                            n_channels=n_channels, path_checkpoint=path_checkpoint, spacial_note='')
+    if Train:
+        model_summary(learning_rate=learning_rate, batch_size=batch_size, lstm_layers=num_layers,
+                      lstm_layer_size=lstm_size, fc_layer_size=ann_hidden, sequence_length=sequence_length,
+                      n_channels=n_channels, path_checkpoint=path_checkpoint, spacial_note='')
 
     with tf.Session() as session:
         tf.global_variables_initializer().run()
@@ -147,8 +159,10 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                 time_remaining = ((epochs - ep) * time_per_ep) / 3600
                 print("CNNLSTM", "epoch:", ep, "\tTrainig-",
                       "MSE:", mse_train, "RMSE:", rmse_train, "\tTesting-", "MSE", mse_test, "RMSE", rmse_test,
-                      "\ttime/epoch:", round(time_per_ep, 2), "\ttime_remaining: ",
-                      int(time_remaining), " hr:", round((time_remaining % 1) * 60, 1), " min", "\ttime_stamp: ",
+                      "\ttime/epoch:", round(time_per_ep,
+                                             2), "\ttime_remaining: ",
+                      int(time_remaining), " hr:", round(
+                          (time_remaining % 1) * 60, 1), " min", "\ttime_stamp: ",
                       datetime.datetime.now().strftime("%Y.%m.%d-%H:%M:%S"))
                 __start = time.time()
 
@@ -159,7 +173,8 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                     else:
                         print("NOT SAVED!!!", path_checkpoint)
 
-                if ep % 1000 == 0 and ep != 0: learning_rate = learning_rate / 10
+                if ep % 1000 == 0 and ep != 0:
+                    learning_rate = learning_rate / 10
 
             save_path = saver.save(session, path_checkpoint)
             if os.path.exists(path_checkpoint + '.meta'):
@@ -187,7 +202,8 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                     __y_pred, error, __y = session.run([prediction, h, y_flat],
                                                        feed_dict={X: trj_x, Y: trj_y, keep_prob: 1.0})
 
-                    RUL_predict, RUL_expected = get_predicted_expected_RUL(__y, __y_pred, lower_bound)
+                    RUL_predict, RUL_expected = get_predicted_expected_RUL(
+                        __y, __y_pred, lower_bound)
 
                     error_list.append(RUL_predict - RUL_expected)
                     pred_list.append(RUL_predict)
@@ -200,14 +216,16 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                     # plt.show()
                 error_list = np.array(error_list)
                 error_list = error_list.ravel()
-                rmse = np.sqrt(np.sum(np.square(error_list)) / len(error_list))  # RMSE
+                rmse = np.sqrt(np.sum(np.square(error_list)) /
+                               len(error_list))  # RMSE
                 print(rmse, scoring_func(error_list))
                 if plot:
                     plt.figure()
                     # plt.plot(expected_list, 'o', color='black', label="expected")
                     # plt.plot(pred_list, 'o', color='red', label="predicted")
                     # plt.figure()
-                    plt.plot(np.sort(error_list), 'o', color='red', label="error")
+                    plt.plot(np.sort(error_list), 'o',
+                             color='red', label="error")
                     plt.legend()
                     plt.show()
                 fig, ax = plt.subplots()
@@ -228,12 +246,14 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                 actual_rul = []
                 error_list = []
 
-                iteration = int(x_validation.shape[0] / (batch_size * sequence_length))
+                iteration = int(
+                    x_validation.shape[0] / (batch_size * sequence_length))
                 print("#of validation points:", x_validation.shape[0], "#datapoints covers from minibatch:",
                       batch_size * sequence_length, "iterations/epoch", iteration)
 
                 for itr in range(iteration):
-                    x_validate_batch, y_validate_batch = next(validation_generator)
+                    x_validate_batch, y_validate_batch = next(
+                        validation_generator)
                     __y_pred, error, __y = session.run([prediction, h, y_flat],
                                                        feed_dict={X: x_validate_batch, Y: y_validate_batch,
                                                                   keep_prob: 1.0})
@@ -246,9 +266,11 @@ def CNNLSTM(dataset, file_no, Train=False, trj_wise=False, plot=False):
                 actual_rul = actual_rul.ravel()
                 error_list = np.array(error_list)
                 error_list = error_list.ravel()
-                rmse = np.sqrt(np.sum(np.square(error_list)) / len(error_list))  # RMSE
+                rmse = np.sqrt(np.sum(np.square(error_list)) /
+                               len(error_list))  # RMSE
 
-                print(y_validation.shape, full_prediction.shape, "RMSE:", rmse, "Score:", scoring_func(error_list))
+                print(y_validation.shape, full_prediction.shape,
+                      "RMSE:", rmse, "Score:", scoring_func(error_list))
                 if plot:
                     plt.plot(full_prediction, label="prediction")
                     plt.plot(actual_rul, label="expected")

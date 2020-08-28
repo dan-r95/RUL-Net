@@ -5,7 +5,7 @@ import tensorflow.contrib.slim as slim
 from data_processing import MAXLIFE
 
 
-def dense_layer(x, size,activation_fn, batch_norm = False,phase=False, drop_out=False, keep_prob=None, scope="fc_layer"):
+def dense_layer(x, size, activation_fn, batch_norm=False, phase=False, drop_out=False, keep_prob=None, scope="fc_layer"):
     """
     Helper function to create a fully connected layer with or without batch normalization or dropout regularization
 
@@ -21,8 +21,10 @@ def dense_layer(x, size,activation_fn, batch_norm = False,phase=False, drop_out=
     """
     with tf.variable_scope(scope):
         if batch_norm:
-            dence_layer = tf.contrib.layers.fully_connected(x, size, activation_fn=None)
-            dence_layer_bn = BatchNorm(name="batch_norm_" + scope)(dence_layer, train=phase)
+            dence_layer = tf.contrib.layers.fully_connected(
+                x, size, activation_fn=None)
+            dence_layer_bn = BatchNorm(
+                name="batch_norm_" + scope)(dence_layer, train=phase)
             return_layer = activation_fn(dence_layer_bn)
         else:
             return_layer = tf.layers.dense(x, size,
@@ -54,14 +56,17 @@ def get_RNNCell(cell_types, keep_prob, state_size, build_with_dropout=True):
         elif cell_type == 'LSTM_LN':
             cell = tf.contrib.rnn.LayerNormBasicLSTMCell(state_size)
         elif cell_type == 'GLSTMCell':
-            cell = tf.contrib.rnn.GLSTMCell(num_units=state_size, initializer=tf.contrib.layers.xavier_initializer())
+            cell = tf.contrib.rnn.GLSTMCell(
+                num_units=state_size, initializer=tf.contrib.layers.xavier_initializer())
         elif cell_type == 'LSTM_BF':
-            cell = tf.contrib.rnn.LSTMBlockFusedCell(num_units=state_size, use_peephole=True)
+            cell = tf.contrib.rnn.LSTMBlockFusedCell(
+                num_units=state_size, use_peephole=True)
         else:
             cell = tf.nn.rnn_cell.BasicRNNCell(state_size)
 
         if build_with_dropout:
-            cell = tf.contrib.rnn.DropoutWrapper(cell, output_keep_prob=keep_prob)
+            cell = tf.contrib.rnn.DropoutWrapper(
+                cell, output_keep_prob=keep_prob)
         cells.append(cell)
 
     cell = tf.contrib.rnn.MultiRNNCell(cells)
@@ -76,6 +81,7 @@ class BatchNorm(object):
     """
     usage : dence_layer_bn = BatchNorm(name="batch_norm_" + scope)(previous_layer, train=is_train)
     """
+
     def __init__(self, epsilon=1e-5, momentum=0.999, name="batch_norm"):
         with tf.variable_scope(name):
             self.epsilon = epsilon
@@ -139,29 +145,38 @@ def trjectory_generator(x_train, y_train, test_engine_id, sequence_length, graph
     num_x_sensors = x_train.shape[1]
     idx = 0
     engine_ids = test_engine_id.unique()
-    if DEBUG: print("total trjectories: ", len(engine_ids))
+    if DEBUG:
+        print("total trjectories: ", len(engine_ids))
 
     while True:
         for id in engine_ids:
 
             indexes = test_engine_id[test_engine_id == id].index
             training_data = x_train[indexes]
-            if DEBUG: print("engine_id: ", id, "start", indexes[0], "end", indexes[-1], "trjectory_len:", len(indexes))
+            if DEBUG:
+                print("engine_id: ", id, "start",
+                      indexes[0], "end", indexes[-1], "trjectory_len:", len(indexes))
             batch_size = int(training_data.shape[0] / sequence_length) + 1
             idx = indexes[0]
 
-            x_batch = np.zeros(shape=(batch_size, sequence_length, num_x_sensors), dtype=np.float32)
-            y_batch = np.zeros(shape=(batch_size, sequence_length), dtype=np.float32)
+            x_batch = np.zeros(
+                shape=(batch_size, sequence_length, num_x_sensors), dtype=np.float32)
+            y_batch = np.zeros(
+                shape=(batch_size, sequence_length), dtype=np.float32)
 
             for i in range(batch_size):
 
                 # Copy the sequences of data starting at this index.
-                if DEBUG: print("current idx=", idx)
+                if DEBUG:
+                    print("current idx=", idx)
                 if idx >= x_train.shape[0]:
-                    if DEBUG: print("BREAK")
+                    if DEBUG:
+                        print("BREAK")
                     break
                 elif (idx + sequence_length) > x_train.shape[0]:
-                    if DEBUG: print("BREAK", idx, x_train.shape[0], idx + sequence_length - x_train.shape[0])
+                    if DEBUG:
+                        print(
+                            "BREAK", idx, x_train.shape[0], idx + sequence_length - x_train.shape[0])
                     x_tmp = x_train[idx:]
                     y_tmp = y_train[idx:]
                     remain = idx + sequence_length - x_train.shape[0]
@@ -173,8 +188,11 @@ def trjectory_generator(x_train, y_train, test_engine_id, sequence_length, graph
 
                 if idx > indexes[-1] - sequence_length:
                     y_tmp = np.copy(y_train[idx:idx + sequence_length])
-                    remain = sequence_length - (indexes[-1] - idx + 1)  # abs(training_data.shape[0]-sequence_length)
-                    if DEBUG: print("(idx + sequence_length) > trj_len:", "remain", remain)
+                    # abs(training_data.shape[0]-sequence_length)
+                    remain = sequence_length - (indexes[-1] - idx + 1)
+                    if DEBUG:
+                        print("(idx + sequence_length) > trj_len:",
+                              "remain", remain)
                     y_tmp[-remain:] = lower_bound
                     y_batch[i] = y_tmp
                 else:
@@ -185,12 +203,17 @@ def trjectory_generator(x_train, y_train, test_engine_id, sequence_length, graph
             batch_size_gap = graph_batch_size - x_batch.shape[0]
             if batch_size_gap > 0:
                 for i in range(batch_size_gap):
-                    x_tmp = -0.01 * np.ones(shape=(sequence_length, num_x_sensors), dtype=np.float32)
-                    y_tmp = -0.01 * np.ones(shape=(sequence_length), dtype=np.float32)
+                    x_tmp = -0.01 * \
+                        np.ones(shape=(sequence_length, num_x_sensors),
+                                dtype=np.float32)
+                    y_tmp = -0.01 * \
+                        np.ones(shape=(sequence_length), dtype=np.float32)
                     xx = np.append(x_batch, x_tmp)
-                    x_batch = np.reshape(xx, [x_batch.shape[0] + 1, x_batch.shape[1], x_batch.shape[2]])
+                    x_batch = np.reshape(
+                        xx, [x_batch.shape[0] + 1, x_batch.shape[1], x_batch.shape[2]])
                     yy = np.append(y_batch, y_tmp)
-                    y_batch = np.reshape(yy, [y_batch.shape[0] + 1, x_batch.shape[1]])
+                    y_batch = np.reshape(
+                        yy, [y_batch.shape[0] + 1, x_batch.shape[1]])
             yield (x_batch, y_batch)
 
 
@@ -207,8 +230,8 @@ def plot_data(data, label=""):
     plt.show()
 
 
-def model_summary(learning_rate,batch_size,lstm_layers,lstm_layer_size,fc_layer_size,sequence_length,n_channels,path_checkpoint,spacial_note=''):
-    path_checkpoint=path_checkpoint + ".txt"
+def model_summary(learning_rate, batch_size, lstm_layers, lstm_layer_size, fc_layer_size, sequence_length, n_channels, path_checkpoint, spacial_note=''):
+    path_checkpoint = path_checkpoint + ".txt"
     if not os.path.exists(os.path.dirname(path_checkpoint)):
         os.makedirs(os.path.dirname(path_checkpoint))
 
@@ -221,7 +244,7 @@ def model_summary(learning_rate,batch_size,lstm_layers,lstm_layer_size,fc_layer_
         print('---------', '\n', file=text_file)
 
         print('---------', file=text_file)
-        print('MAXLIFE: ', MAXLIFE,'\n',  file=text_file)
+        print('MAXLIFE: ', MAXLIFE, '\n',  file=text_file)
         print('learning_rate: ', learning_rate, file=text_file)
         print('batch_size: ', batch_size, file=text_file)
         print('lstm_layers: ', lstm_layers, file=text_file)
@@ -243,7 +266,7 @@ def model_summary(learning_rate,batch_size,lstm_layers,lstm_layer_size,fc_layer_
             total_size += var_size
             total_bytes += var_bytes
             print(var.name, slim.model_analyzer.tensor_description(var), '[%d, bytes: %d]' %
-                      (var_size, var_bytes), file=text_file)
+                  (var_size, var_bytes), file=text_file)
 
         print('\nTotal size of variables: %d' % total_size, file=text_file)
         print('Total bytes of variables: %d' % total_bytes, file=text_file)
@@ -273,7 +296,7 @@ def scoring_func(error_arr):
     return score
 
 
-def conv_layer(X,filters,kernel_size,strides,padding,batch_norm,is_train,scope):
+def conv_layer(X, filters, kernel_size, strides, padding, batch_norm, is_train, scope):
     """
     1D convolutional layer with or without dropout or batch normalization
 
@@ -289,8 +312,8 @@ def conv_layer(X,filters,kernel_size,strides,padding,batch_norm,is_train,scope):
             return tf.nn.relu(BatchNorm(name="norm_"+scope)(conv1, train=is_train))
         else:
             return tf.layers.conv1d(inputs=X, filters=filters, kernel_size=kernel_size, strides=strides,
-                                     padding=padding, kernel_initializer=tf.contrib.layers.xavier_initializer(),
-                                     activation=tf.nn.relu)
+                                    padding=padding, kernel_initializer=tf.contrib.layers.xavier_initializer(),
+                                    activation=tf.nn.relu)
 
 
 def get_predicted_expected_RUL(__y, __y_pred, lower_bound=-1):
